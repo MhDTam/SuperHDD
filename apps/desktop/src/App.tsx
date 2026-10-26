@@ -1198,7 +1198,7 @@ export default function App() {
             <strong>
               <bdi>{folderEngine&&runtime?t(`runtimePhase_${runtime.phase}`):data?.serviceState || t("noService")}</bdi>
             </strong>
-            <p>{t(folderEngine?"diagnosticsHostHint":"buildStatusHint")}</p>
+            {folderEngine && <p>{t("diagnosticsHostHint")}</p>}
           </Card>
           <Card className="health-card">
             <div className="icon-orb green">
@@ -1317,10 +1317,6 @@ export default function App() {
                   </select>
                 </div>
               )}
-              <div className="soft-note">
-                <Info />
-                {t("buildStatusHint")}
-              </div>
             </div>
             <div className="settings-art">
               <Settings size={180} strokeWidth={1} />

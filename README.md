@@ -6,6 +6,24 @@ game and application folders stored on an HDD.
 Built with **Tauri 2, React, TypeScript, Rust, and C++**. The interface supports
 English and Arabic, including right-to-left layout.
 
+## Screenshots
+
+Version **0.1.1**. These screenshots show the application's design-preview mode
+with example devices and charts. They contain no live device information or
+measured performance claims.
+
+![SuperHDD welcome screen](docs/screenshots/welcome-en.png)
+
+![SuperHDD drive overview in English](docs/screenshots/home-en.png)
+
+![SuperHDD performance page in Arabic with right-to-left layout](docs/screenshots/performance-ar.png)
+
+| Settings in English | Settings in Arabic |
+| --- | --- |
+| ![English settings](docs/screenshots/settings-en.png) | ![Arabic settings](docs/screenshots/settings-ar.png) |
+
+[Screenshot details](docs/screenshots/README.md) · [Changelog](CHANGELOG.md)
+
 ## Current features
 
 - Discover installed games and applications and select folders to cache.

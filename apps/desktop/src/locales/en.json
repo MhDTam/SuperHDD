@@ -129,7 +129,6 @@
   "english": "English",
   "arabic": "العربية",
   "buildStatus": "Development build",
-  "buildStatusHint": "UI and algorithm tests are separate from transparent storage qualification.",
   "close": "Close",
   "of": "of",
   "ssd": "SSD",

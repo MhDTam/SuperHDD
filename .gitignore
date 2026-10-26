@@ -17,6 +17,7 @@ artifacts/runtime/
 /test-results/
 /playwright-report/
 /blob-report/
+/.playwright-cli/
 /apps/desktop/public/benchmarks/*.json
 
 # Credentials, machine-specific configuration, and editor state.

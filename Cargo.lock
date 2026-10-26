@@ -3191,7 +3191,7 @@ checksum = "13c2bddecc57b384dee18652358fb23172facb8a2c51ccc10d74c157bdea3292"
 
 [[package]]
 name = "superhdd-cache-core"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "serde",
  "serde_json",
@@ -3201,7 +3201,7 @@ dependencies = [
 
 [[package]]
 name = "superhdd-desktop"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "serde",
  "serde_json",
@@ -3212,7 +3212,7 @@ dependencies = [
 
 [[package]]
 name = "superhdd-platform"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "reqwest 0.12.28",
  "serde",
@@ -3226,7 +3226,7 @@ dependencies = [
 
 [[package]]
 name = "superhdd-service"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "serde",
  "serde_json",
@@ -3238,7 +3238,7 @@ dependencies = [
 
 [[package]]
 name = "superhdd-storage-control"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "serde",
  "serde_json",
