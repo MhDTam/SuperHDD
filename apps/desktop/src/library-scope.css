@@ -1,0 +1,5 @@
+.library-cache-mode{display:grid;gap:8px;margin-block:14px;padding:13px 14px;border:1px solid rgba(125,145,180,.18);border-radius:14px;background:rgba(240,245,252,.45)}
+.library-cache-mode>label{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:12px;font-weight:600}
+.library-cache-mode select{width:auto;max-width:100%;min-width:170px;flex:0 1 auto;font-weight:500;font-size:12px;padding:8px 10px}
+.library-cache-mode p,.library-cache-mode small{margin:0;color:var(--muted);font-size:11px;line-height:1.6}
+.library-data-path{display:block;overflow-wrap:anywhere;font-size:11px;color:var(--ink)}

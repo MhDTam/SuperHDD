@@ -1,0 +1,15 @@
+[package]
+name = "superhdd-loopback-runtime"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib"]
+
+[workspace]
+
+[dependencies]
+superhdd-cache-core = { path = "../../crates/cache-core" }
+superhdd-storage-control = { path = "../../crates/storage-control" }
+serde_json = "1"

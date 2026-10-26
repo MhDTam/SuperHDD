@@ -1,0 +1,33 @@
+; Development package only. A valid signed catalog and qualification are required.
+; No volume-class LowerFilters or UpperFilters registration is performed.
+[Version]
+Signature="$WINDOWS NT$"
+Class=System
+ClassGuid={4d36e97d-e325-11ce-bfc1-08002be10318}
+Provider=%Provider%
+DriverVer=10/17/2026,0.1.0.0
+CatalogFile=SuperHDDCacheDriver.cat
+PnpLockdown=1
+
+[DefaultInstall.NTamd64]
+CopyFiles=DriverFiles
+[DefaultInstall.NTamd64.Services]
+AddService=SuperHDDCacheDriver,0,DriverService
+[DriverService]
+DisplayName=%ServiceName%
+ServiceType=1
+StartType=3
+ErrorControl=1
+ServiceBinary=%12%\SuperHDDCacheDriver.sys
+[DestinationDirs]
+DriverFiles=12
+[DriverFiles]
+SuperHDDCacheDriver.sys
+[SourceDisksNames]
+1=%Media%,,,
+[SourceDisksFiles]
+SuperHDDCacheDriver.sys=1
+[Strings]
+Provider="Super HDD Development"
+ServiceName="Super HDD Experimental Cache Driver"
+Media="Super HDD signed driver package"

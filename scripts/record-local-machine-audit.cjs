@@ -1,0 +1,46 @@
+// Current machine only. No publication/signing workflow and no global-cache claim.
+const fs=require('node:fs');
+const path=require('node:path');
+const assert=require('node:assert/strict');
+const crypto=require('node:crypto');
+const root=path.resolve(__dirname,'..');
+const read=file=>JSON.parse(fs.readFileSync(path.join(root,file),'utf8').replace(/^\uFEFF/,''));
+const hash=file=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,file))).digest('hex').toUpperCase();
+const base=path.join(root,'artifacts/runtime');
+const runs=fs.readdirSync(base,{withFileTypes:true}).filter(e=>e.isDirectory()&&/^local-files-[a-f0-9]{32}$/.test(e.name)).map(e=>path.join('artifacts/runtime',e.name)).filter(p=>fs.existsSync(path.join(root,p,'result.json'))).sort((a,b)=>fs.statSync(path.join(root,b,'result.json')).mtimeMs-fs.statSync(path.join(root,a,'result.json')).mtimeMs);
+assert(runs.length,'No completed local ordinary-file test');
+const run=runs[0],files=read(path.join(run,'result.json'));
+assert(files.passed&&files.drives.length===2&&files.cleanup.length===2);
+assert(files.cleanup.every(c=>c.sourceRemoved&&c.cacheRemoved));
+assert.equal(files.binarySha256,hash('target/release/examples/hardware_bench.exe'));
+assert(files.sourceHashes.every(s=>hash(path.relative(root,s.Path))===s.Hash));
+const median=values=>values.sort((a,b)=>a-b)[Math.floor(values.length/2)];
+const drives=files.drives.map(d=>{
+ const report=read(path.join(run,d.report));
+ assert(Object.values(report.checks).every(v=>v===true));
+ assert(!fs.existsSync(report.source)&&!fs.existsSync(report.backing));
+ const rate=name=>median(report.measurements.filter(m=>m.name===name).map(m=>m.mibPerSecond));
+ return {letter:d.source.letter,sourceModel:d.source.model,cacheModel:d.ssd.model,checksPassed:Object.keys(report.checks).length,random64HddMiBs:rate('HDD direct random 64 KiB'),random64WarmMiBs:rate('Cache warm random 64 KiB'),random4HddMiBs:rate('HDD direct random 4 KiB'),random4WarmMiBs:rate('Cache warm random 4 KiB'),scope:report.scope};
+});
+const vm=read('artifacts/runtime/kernel-lab/direct-session.json');
+assert(vm.phase==='completed'&&vm.passed&&vm.probe.passed&&vm.probe.ownedFixturesRemoved&&Object.values(vm.probe.checks).every(v=>v===true));
+assert(vm.hostFileBacking&&vm.hostFileBacking.sourceDisk!==vm.hostFileBacking.cacheDisk);
+assert(vm.parents.length===2&&vm.parents[0].path===vm.hostFileBacking.sourcePath&&/^D:\\SuperHDD-DirectTest-[a-f0-9]{32}\.vhdx$/.test(vm.parents[0].path));
+assert(vm.parents.every(p=>!fs.existsSync(p.path))&&vm.hostParentsRemoved&&vm.coldBootCleanup.passed);
+assert(vm.finalHost.passed&&vm.finalHost.vmState==='Off'&&vm.finalHost.assignedVmMemoryBytes===0&&vm.finalHost.activeHostCacheDrivers.length===0);
+assert(vm.sourceHashes.every(s=>hash(path.relative(root,s.Path))===s.Hash));
+for(const binary of vm.binaryHashes){assert.equal(hash(binary.name==='SuperHDDService.exe'?'target/release/SuperHDDService.exe':`target/release/examples/${binary.name}`),binary.sha256);}
+assert.equal(vm.directDriver.unsignedSha256,hash('artifacts/driver-direct-vm/SuperHDDCacheDriver.sys'));
+assert.equal(vm.hostFileBacking.preflightToolSha256,hash('target/release/examples/local_preflight.exe'));
+const preflight=read(`artifacts/runtime/kernel-lab/managed-${vm.runId}/host-preflight.json`);
+assert(preflight.readOnly&&preflight.runtime.canStart===false&&preflight.runtime.reason==='runtimeReleasePending');
+const stamp='20261019';
+const startup=read(`artifacts/runtime/native-final-startup-${stamp}.json`);
+const native=read(`artifacts/runtime/native-audit-final-${stamp}.json`);
+assert(startup.running&&startup.sha256===hash('target/release/SuperHDD.exe')&&Object.values(native.checks).every(v=>v===true));
+const report={schema:1,at:new Date().toISOString(),scope:'Existing workstation and existing disks; only newly created disposable files; publication deferred',localFileCachePassed:true,localFileRun:files.runId,os:files.os,drives,temporaryPayloadsRemoved:true,dedicatedRamCacheBytes:0,isolatedV5ServiceOnHostHddSsdPassed:true,isolatedV5Checks:Object.keys(vm.probe.checks).length,isolatedV5Run:vm.runId,guestOff:true,guestAssignedMemoryBytes:0,nativeDesktopPassed:true,nativeDesktopChecks:Object.keys(native.checks).length,localSourceEligibility:preflight.sources.map(s=>({letter:s.letter,eligible:s.directSourceEligible,error:s.eligibilityError})),transparentHostCacheActive:false,hostKernelDriverInstalled:false,hostSecurityChanged:false,hostRuntimeBlocker:preflight.runtime.reason,limitations:['File-cache timings apply only to the benchmark API.','V5 driver/service ran in the isolated guest with VHDX files backed by the real host HDD and SSD.','These results do not activate caching for host Windows applications or games.'],sources:['scripts/test-local-files.ps1','scripts/test-direct-session.ps1','scripts/record-local-machine-audit.cjs','crates/platform/examples/local_preflight.rs'].map(file=>({file,sha256:hash(file)}))};
+const security=read('artifacts/current-machine-security.json');
+assert(security.readOnly&&security.version===files.os.Version);
+report.secureBootEnabled=security.secureBootEnabled;
+fs.writeFileSync(path.join(root,'artifacts/current-machine-evidence.json'),JSON.stringify(report,null,2)+'\n');
+console.log(JSON.stringify({...report,sources:`${report.sources.length} inputs`},null,2));
